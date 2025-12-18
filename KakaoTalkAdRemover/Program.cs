@@ -15,6 +15,8 @@ internal static class Program
         if (!OperatingSystem.IsWindows()) return;
 
         ApplicationConfiguration.Initialize();
+        
+        RefreshStartupPath();
 
         using var icon = LoadEmbeddedIcon("KakaoTalkAdRemover.app.ico") ?? SystemIcons.Shield;
         
@@ -46,6 +48,28 @@ internal static class Program
         Application.Run();
 
         cts.Cancel();
+    }
+    
+    private static void RefreshStartupPath()
+    {
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+            
+            if (key?.GetValue(AppName) == null) return;
+            
+            var currentPath = Application.ExecutablePath;
+            var registeredPath = key.GetValue(AppName)?.ToString();
+            
+            if (registeredPath != currentPath)
+            {
+                key.SetValue(AppName, currentPath);
+            }
+        }
+        catch
+        {
+            // ignored
+        }
     }
     
     private static bool IsStartupEnabled()
