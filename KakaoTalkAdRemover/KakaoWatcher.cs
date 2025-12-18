@@ -109,9 +109,16 @@ internal static class KakaoWatcher
             if (NativeMethods.GetWindowText(currentHandle, buf, 256) > 0) continue;
 
             NativeMethods.GetWindowRect(currentHandle, out var rect);
-            if (rect.Height is >= 90 and <= 92)
+            var isAd = rect switch
             {
-                NativeMethods.ShowWindow(currentHandle, 0); 
+                { Height: >= 90 and <= 92 } => true,
+                { Width: 156, Height: 44 } => true,
+                _ => false
+            };
+
+            if (isAd)
+            {
+                NativeMethods.ShowWindow(currentHandle, 0);
             }
         }
     }
