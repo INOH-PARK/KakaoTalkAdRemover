@@ -76,9 +76,10 @@ internal static class KakaoWatcher
 
         if (_cachedAdHandle == 0 || _cachedListHandle == 0) return;
 
-        if (NativeMethods.IsWindowVisible(_cachedAdHandle))
+        if (NativeMethods.IsWindowVisible(_cachedAdHandle)|| NativeMethods.IsWindowEnabled(_cachedAdHandle))
         {
             NativeMethods.ShowWindow(_cachedAdHandle, 0);
+            NativeMethods.EnableWindow(_cachedAdHandle, false);
         }
 
         NativeMethods.GetWindowRect(_cachedListHandle, out var listRect);
@@ -116,10 +117,9 @@ internal static class KakaoWatcher
                 _ => false
             };
 
-            if (isAd)
-            {
-                NativeMethods.ShowWindow(currentHandle, 0);
-            }
+            if (!isAd) continue;
+            NativeMethods.ShowWindow(currentHandle, 0);
+            NativeMethods.EnableWindow(currentHandle, false);
         }
     }
 }
